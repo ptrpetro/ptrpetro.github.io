@@ -69,13 +69,13 @@
     position:relative;
   }
 
-  /* faint diagonal accent line, echoes a circuit trace across the page */
+  /* diagonal accent line */
   body::before{
     content:"";
     position:fixed;
     top:-10%;
     right:14%;
-    width:1px;
+    width:2px;
     height:130%;
     background:linear-gradient(to bottom, transparent, rgba(232,163,61,0.16) 30%, rgba(232,163,61,0.16) 70%, transparent);
     transform:rotate(9deg);
@@ -127,7 +127,7 @@
     .navlinks{ display:none; }
   }
 
-  /* ---------- eyebrow / section headers ---------- */
+  /* ---------- headers ---------- */
   .eyebrow{
     font-family:var(--font-mono);
     font-size:13px;
@@ -214,7 +214,7 @@
   .btn.primary:hover{ background:var(--amber-soft); border-color:var(--amber-soft); }
   .btn:focus-visible{ outline:1px solid var(--amber); outline-offset:2px; }
 
-  /* terminal card - the "subtle technical visual element" */
+  /* terminal card  */
   .term{
     background:var(--bg-card);
     border:1px solid var(--border);
@@ -288,11 +288,13 @@
     overflow:hidden;
     margin-bottom:28px;
     background:var(--bg-card);
-    transition:border-color .25s ease, box-shadow .25s ease;
+    transition:border-color .25s ease, box-shadow .25s ease,
+      opacity .35s ease, transform .35s ease,
+      max-height .4s ease, margin-bottom .4s ease;
   }
   .proj:hover{ border-color:var(--border-hover); box-shadow:0 20px 40px -24px rgba(0,0,0,0.55); }
 
-  /* ---- tilt (JS-driven 3D hover) ---- */
+  /* ---- tilt  ---- */
   .tilt{
     transition:transform .15s ease-out, box-shadow .25s ease;
     will-change:transform;
@@ -309,8 +311,12 @@
   .filter-chip.active{ background:var(--amber); border-color:var(--amber); color:var(--on-amber); font-weight:600; }
   .filter-chip:focus-visible{ outline:1px solid var(--amber); outline-offset:2px; }
 
-  .proj.dim{ opacity:0.32; filter:saturate(0.4); }
-  .proj.dim:hover{ opacity:0.55; }
+  /* ---- filtered-out projects animate closed instead of vanishing instantly ---- */
+  .proj.hide{
+    opacity:0 !important;
+    transform:scale(0.97) !important;
+    pointer-events:none;
+  }
 
   /* ---- badge hover ---- */
   .badge{ transition:border-color .2s ease, color .2s ease; cursor:default; }
@@ -1113,6 +1119,31 @@
       bar.appendChild(chip);
     });
 
+    function hideCard(card){
+      if(card.classList.contains('hide')) return;
+      card.style.maxHeight = card.scrollHeight + 'px';
+      // eslint-disable-next-line no-unused-expressions
+      card.offsetHeight; // force reflow so the browser registers the starting height
+      requestAnimationFrame(()=>{
+        card.classList.add('hide');
+        card.style.maxHeight = '0px';
+        card.style.marginBottom = '0px';
+      });
+    }
+
+    function showCard(card){
+      if(!card.classList.contains('hide')) return;
+      card.classList.remove('hide');
+      const target = card.scrollHeight; // true content height, unaffected by current max-height clipping
+      card.style.maxHeight = target + 'px';
+      card.style.marginBottom = '';
+      card.addEventListener('transitionend', function onEnd(e){
+        if(e.propertyName !== 'max-height') return;
+        card.style.maxHeight = 'none'; // release the lock so later content changes (or window resizes) aren't clipped
+        card.removeEventListener('transitionend', onEnd);
+      });
+    }
+
     bar.addEventListener('click', (e)=>{
       const chip = e.target.closest('.filter-chip');
       if(!chip) return;
@@ -1122,12 +1153,9 @@
       chip.classList.add('active');
 
       cards.forEach(card=>{
-        if(filter === 'all'){
-          card.classList.remove('dim');
-        } else {
-          const techs = (card.dataset.tech || '').split(',').map(t=>t.trim());
-          card.classList.toggle('dim', !techs.includes(filter));
-        }
+        const techs = (card.dataset.tech || '').split(',').map(t=>t.trim());
+        const shouldShow = filter === 'all' || techs.includes(filter);
+        if(shouldShow){ showCard(card); } else { hideCard(card); }
       });
     });
   })();
