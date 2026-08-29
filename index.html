@@ -4,6 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peter Petro - Software Engineer</title>
+<meta name="description" content="Portfolio of Peter Petro — Computer Science student at UCF building full-stack apps, computer vision, and browser tools. Open to SWE internships and new-grad roles.">
+<meta name="theme-color" content="#0a0a0b">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Peter Petro - Software Engineer">
+<meta property="og:description" content="Computer Science student at UCF building full-stack apps, computer vision, and browser tools. Open to SWE internships and new-grad roles.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:url" content="https://ptrpetro.github.io">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Peter Petro - Software Engineer">
+<meta name="twitter:description" content="Computer Science student at UCF building full-stack apps, computer vision, and browser tools.">
+<meta name="twitter:image" content="og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -25,6 +40,13 @@
     --green: #6fcf8e;
     --on-amber: #0a0a0b;
     --term-dot: #3a3a3e;
+    /* header always stays dark-on-dark regardless of theme, so it needs its own fixed palette */
+    --header-bg: rgba(10,10,11,0.82);
+    --header-border: #26262a;
+    --header-text: #ece9e2;
+    --header-text-dim: #918f8a;
+    --header-amber: #e8a33d;
+    --header-amber-soft: #f0bd6c;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     --font-serif: 'Newsreader', Georgia, serif;
     --font-sans: 'Inter', -apple-system, sans-serif;
@@ -78,7 +100,7 @@
     width:2px;
     height:130%;
     background:linear-gradient(to bottom, transparent, rgba(232,163,61,0.16) 30%, rgba(232,163,61,0.16) 70%, transparent);
-    transform:rotate(9deg);
+    transform:rotate(9deg) translateY(var(--parallax-y, 0px));
     pointer-events:none;
     z-index:0;
   }
@@ -91,9 +113,9 @@
   /* ---------- nav ---------- */
   header{
     position:sticky; top:0; z-index:50;
-    background:rgba(10,10,11,0.82);
+    background:var(--header-bg);
     backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid var(--header-border);
   }
   nav.wrap{
     display:flex; align-items:center; justify-content:space-between;
@@ -104,23 +126,25 @@
     font-weight:600;
     font-size:15px;
     letter-spacing:0.02em;
-    color:var(--text);
+    color:var(--header-text);
   }
-  .logo .blink{ color:var(--amber); }
+  .logo .blink{ color:var(--header-amber); }
   .navlinks{
     display:flex; gap:28px;
     font-family:var(--font-mono);
     font-size:13px;
-    color:var(--text-dim);
+    color:var(--header-text-dim);
   }
   .navlinks a{ position:relative; transition:color .2s ease; padding:4px 0; }
-  .navlinks a:hover{ color:var(--text); }
+  .navlinks a:hover{ color:var(--header-text); }
   .navlinks a::after{
     content:""; position:absolute; left:0; bottom:0; width:0; height:1px;
-    background:var(--amber); transition:width .25s ease;
+    background:var(--header-amber); transition:width .25s ease;
   }
   .navlinks a:hover::after{ width:100%; }
-  .navlinks a:focus-visible, a:focus-visible{ outline:1px solid var(--amber); outline-offset:3px; }
+  .navlinks a.active{ color:var(--header-text); }
+  .navlinks a.active::after{ width:100%; }
+  .navlinks a:focus-visible, a:focus-visible{ outline:1px solid var(--header-amber); outline-offset:3px; }
   .navtoggle{ display:none; }
 
   @media (max-width:720px){
@@ -155,6 +179,25 @@
     display:flex; align-items:center;
     padding:64px 0 80px;
     border-bottom:1px solid var(--border);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:-20% -10%;
+    background-image:
+      linear-gradient(rgba(232,163,61,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,163,61,0.05) 1px, transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(ellipse 60% 55% at 30% 40%, #000 0%, transparent 75%);
+    mask-image:radial-gradient(ellipse 60% 55% at 30% 40%, #000 0%, transparent 75%);
+    animation:grid-drift 30s linear infinite;
+    pointer-events:none;
+    z-index:0;
+  }
+  @keyframes grid-drift{
+    0%{ transform:translate(0, 0); }
+    100%{ transform:translate(46px, 46px); }
   }
   .hero-grid{
     display:grid;
@@ -162,6 +205,8 @@
     gap:64px;
     align-items:center;
     width:100%;
+    position:relative;
+    z-index:1;
   }
   .hero-eyebrow{
     font-family:var(--font-mono);
@@ -364,6 +409,13 @@
   .proj:hover .proj-icon{ color:var(--amber-soft); transform:scale(1.06); }
   .proj-body{ padding:32px 32px 28px; display:flex; flex-direction:column; }
   .proj-name{ font-family:var(--font-serif); font-size:24px; font-weight:500; color:var(--text); margin-bottom:14px; }
+  .proj-tag{
+    display:inline-flex; align-items:center; gap:5px;
+    font-family:var(--font-mono); font-size:11px; font-weight:600;
+    color:var(--amber-soft); background:var(--amber-dim); border:1px solid var(--amber-dim);
+    padding:4px 10px; border-radius:20px; letter-spacing:0.03em;
+    text-transform:uppercase; margin:-4px 0 16px;
+  }
   .proj-block{ margin-bottom:14px; }
   .proj-label{ font-family:var(--font-mono); font-size:11px; color:var(--amber); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
   .proj-line{ font-size:14.5px; color:var(--text-dim); }
@@ -485,6 +537,21 @@
   .reveal{ opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease; }
   .reveal.show{ opacity:1; transform:none; }
 
+  /* section-specific entrance directions for variety */
+  .reveal-left{ opacity:0; transform:translate(-26px, 0); transition:opacity .7s ease, transform .7s ease; }
+  .reveal-left.show{ opacity:1; transform:none; }
+  .reveal-right{ opacity:0; transform:translate(26px, 0); transition:opacity .7s ease, transform .7s ease; }
+  .reveal-right.show{ opacity:1; transform:none; }
+
+  /* staggered children — reused inside existing .reveal containers, no extra markup needed */
+  .badge, .tree-item, .fact, .trans-item{
+    opacity:0; transform:translateY(6px);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  .badge.stagger-show, .tree-item.stagger-show, .fact.stagger-show, .trans-item.stagger-show{
+    opacity:1; transform:none;
+  }
+
   /* ---------- cursor-reactive ambient spotlight ---------- */
   .spotlight{
     position:fixed; inset:0; z-index:0; pointer-events:none;
@@ -497,7 +564,7 @@
   /* ---------- scroll progress bar ---------- */
   .scroll-progress{
     position:absolute; left:0; bottom:-1px; height:2px; width:0%;
-    background:linear-gradient(90deg, var(--amber), var(--amber-soft));
+    background:linear-gradient(90deg, var(--header-amber), var(--header-amber-soft));
     z-index:2;
   }
 
@@ -505,13 +572,13 @@
   .nav-right{ display:flex; align-items:center; gap:22px; }
   .nav-actions{ display:flex; align-items:center; gap:8px; }
   .icon-btn{
-    font-family:var(--font-mono); font-size:12px; color:var(--text-dim);
-    background:transparent; border:1px solid var(--border); border-radius:6px;
-    padding:6px 10px; cursor:pointer; transition:border-color .2s ease, color .2s ease;
+    font-family:var(--font-mono); font-size:12px; color:var(--header-text-dim);
+    background:transparent; border:1px solid var(--header-border); border-radius:6px;
+    padding:6px 10px; cursor:pointer; transition:border-color .2s ease, color .2s ease, transform .15s ease-out;
     display:inline-flex; align-items:center; gap:4px; line-height:1;
   }
-  .icon-btn:hover{ border-color:var(--amber); color:var(--amber-soft); }
-  .icon-btn:focus-visible{ outline:1px solid var(--amber); outline-offset:2px; }
+  .icon-btn:hover{ border-color:var(--header-amber); color:var(--header-amber-soft); }
+  .icon-btn:focus-visible{ outline:1px solid var(--header-amber); outline-offset:2px; }
   @media (max-width:720px){ #paletteTrigger span{ display:none; } #paletteTrigger::after{ content:"⌘"; } }
 
   /* ---------- command palette ---------- */
@@ -565,6 +632,15 @@
     z-index:300; white-space:nowrap;
   }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ---------- film grain texture overlay ---------- */
+  .grain{
+    position:fixed; inset:0; z-index:40; pointer-events:none;
+    opacity:0.035;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size:160px 160px;
+  }
 
   /* ---------- boot sequence ---------- */
   .boot-overlay{
@@ -662,7 +738,7 @@
     <div class="eyebrow">whoami</div>
     <h2 class="sec-title reveal">About Me</h2>
     <div class="about-grid">
-      <div class="about-text reveal">
+      <div class="about-text reveal-left">
         <p>I moved to the U.S. from Hungary with a backpack and not much of a
         plan beyond figuring it out as I went - so when I got to college and
         could barely get a <strong>for-loop</strong> to compile, that felt
@@ -680,7 +756,7 @@
         Navy stakeholders on adaptive optics for defense and telecom -
         my first real look at engineering outside a classroom.</p>
       </div>
-      <div class="facts reveal">
+      <div class="facts reveal-right">
         <div class="fact"><span class="fact-k">Originally from</span><span class="fact-v">Hungary</span></div>
         <div class="fact"><span class="fact-k">Based in</span><span class="fact-v">Orlando, FL</span></div>
         <div class="fact"><span class="fact-k">Studying</span><span class="fact-v">B.S. Computer Science</span></div>
@@ -737,13 +813,14 @@
       <div class="proj-visual"><span class="proj-index">03</span><span class="proj-icon"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M27 9h10M32 9v6"/><path d="M44.5 15.5l3-3" opacity="0.5"/><circle cx="32" cy="36" r="18"/><path d="M32 36V24M32 36l9 5"/></svg></span></div>
       <div class="proj-body">
         <div class="proj-name">FocusForge - AI Chrome Extension</div>
+        <div class="proj-tag">⚡ built in a 12-hour hackathon</div>
         <div class="proj-block"><div class="proj-label">Problem</div><div class="proj-line">Pomodoro timers reset the second you close the laptop, and nobody learns anything from a session once it's over.</div></div>
         <div class="proj-block"><div class="proj-label">Solution</div><div class="proj-line">A Manifest V3 extension with a service-worker timer that survives browser restarts, plus a Gemini integration that reads your post-session reflection and returns a personalized suggestion.</div></div>
         <div class="badges">
           <span class="badge">JavaScript</span><span class="badge">HTML/CSS</span><span class="badge">Chrome APIs</span><span class="badge">Google Gemini</span>
         </div>
         <button class="proj-more-toggle" aria-expanded="false">+ under the hood <span class="chev">▾</span></button>
-        <div class="proj-more"><div class="proj-more-inner">Manifest V3's service workers get killed and restarted constantly by the browser, so persisting timer state correctly ended up taking more care than the timer logic itself.</div></div>
+        <div class="proj-more"><div class="proj-more-inner">Built solo overnight in a summer hackathon with a 12-hour clock running. Manifest V3's service workers get killed and restarted constantly by the browser, so persisting timer state correctly ended up taking more care than the timer logic itself — and that was the piece I could least afford to be fighting an hour before submission.</div></div>
         <div class="proj-links"><a href="https://github.com/ptrpetro" target="_blank" rel="noopener">↗ View on GitHub</a></div>
       </div>
     </div>
@@ -916,6 +993,8 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="grain"></div>
+
 <script>
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1072,16 +1151,83 @@
 
   // scroll reveal
   (function(){
-    const items = document.querySelectorAll('.reveal');
+    const items = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(e=>{
-        if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); }
+        if(e.isIntersecting){
+          e.target.classList.add('show');
+          const staggerEls = e.target.querySelectorAll('.badge, .tree-item, .fact, .trans-item');
+          staggerEls.forEach((el, i)=>{
+            el.style.transitionDelay = prefersReducedMotion ? '0ms' : (i * 40) + 'ms';
+            el.classList.add('stagger-show');
+          });
+          io.unobserve(e.target);
+        }
       });
     }, { threshold: 0.12 });
     items.forEach(it=> io.observe(it));
   })();
 
-  // 3D tilt on hover - cards, terminal, edu/exp
+  // scroll-spy nav — highlight the section currently in view
+  (function(){
+    const navLinks = document.querySelectorAll('.navlinks a');
+    if(!navLinks.length) return;
+    const map = {};
+    navLinks.forEach(a=>{
+      const id = a.getAttribute('href').replace('#', '');
+      map[id] = a;
+    });
+    const sections = Object.keys(map)
+      .map(id => document.getElementById(id))
+      .filter(Boolean);
+
+    const spy = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          navLinks.forEach(a=> a.classList.remove('active'));
+          const link = map[entry.target.id];
+          if(link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+
+    sections.forEach(s=> spy.observe(s));
+  })();
+
+  // magnetic buttons — nudge toward the cursor within their own bounds
+  (function(){
+    if(prefersReducedMotion) return;
+    document.querySelectorAll('.btn, .icon-btn').forEach(el=>{
+      el.addEventListener('mousemove', (e)=>{
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        el.style.transform = `translate(${x * 0.18}px, ${y * 0.3}px)`;
+      });
+      el.addEventListener('mouseleave', ()=>{ el.style.transform = ''; });
+    });
+  })();
+
+  // scroll parallax — diagonal accent line + hero terminal card drift slightly with scroll
+  (function(){
+    if(prefersReducedMotion) return;
+    const termCard = document.querySelector('.hero .term');
+    let raf;
+    function update(){
+      const y = window.scrollY;
+      document.documentElement.style.setProperty('--parallax-y', (y * 0.06) + 'px');
+      if(termCard){
+        const heroRect = document.querySelector('.hero').getBoundingClientRect();
+        const progress = Math.min(Math.max(-heroRect.top / (heroRect.height || 1), 0), 1);
+        termCard.style.transform = `translateY(${progress * -24}px)`;
+      }
+      raf = null;
+    }
+    window.addEventListener('scroll', ()=>{
+      if(!raf) raf = requestAnimationFrame(update);
+    }, { passive:true });
+    update();
+  })();
   (function(){
     if(prefersReducedMotion) return;
     document.querySelectorAll('.tilt').forEach(card=>{
